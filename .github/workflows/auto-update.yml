@@ -1,0 +1,22 @@
+name: Auto WordPress Update
+
+on:
+  schedule:
+    - cron: '0 3 * * 0' # Every Sunday at 3 AM UTC
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run WP-CLI via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd public_html  # change this if your WordPress root is different
+            wp core update --allow-root
+            wp plugin update --all --allow-root
+            wp theme update --all --allow-root
